@@ -1,0 +1,11 @@
+apiVersion: ec2.aws.upbound.io/v1beta1
+kind: Instance
+metadata:
+  name: demo-instance
+spec:
+  forProvider:
+    region: us-east-1
+    ami: ami-12345678
+    instanceType: t2.micro
+  providerConfigRef:
+    name: default

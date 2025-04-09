@@ -1,0 +1,24 @@
+version: '3'
+
+tasks:
+  create:
+    desc: Create the kind cluster and install Crossplane + LocalStack
+    cmds:
+      - kind create cluster --name crossplane-localstack-lab
+      - ./bootstrap.sh
+
+  apply:
+    desc: Apply all Crossplane manifests
+    cmds:
+      - kubectl apply -f manifests/
+
+  destroy:
+    desc: Delete the kind cluster
+    cmds:
+      - kind delete cluster --name crossplane-localstack-lab
+
+  status:
+    desc: Show resources
+    cmds:
+      - kubectl get all -n crossplane-system
+      - kubectl get bucket,queue,restapis,function,role || true

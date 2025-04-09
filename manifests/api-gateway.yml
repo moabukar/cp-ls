@@ -1,0 +1,10 @@
+apiVersion: apigateway.aws.upbound.io/v1beta1
+kind: RestAPI
+metadata:
+  name: demo-api
+spec:
+  forProvider:
+    region: us-east-1
+    name: demo-api
+  providerConfigRef:
+    name: default

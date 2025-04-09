@@ -1,0 +1,22 @@
+apiVersion: iam.aws.upbound.io/v1beta1
+kind: Role
+metadata:
+  name: lambda-exec-role
+spec:
+  forProvider:
+    assumeRolePolicyDocument: |
+      {
+        "Version": "2012-10-17",
+        "Statement": [
+          {
+            "Action": "sts:AssumeRole",
+            "Principal": {
+              "Service": "lambda.amazonaws.com"
+            },
+            "Effect": "Allow",
+            "Sid": ""
+          }
+        ]
+      }
+  providerConfigRef:
+    name: default

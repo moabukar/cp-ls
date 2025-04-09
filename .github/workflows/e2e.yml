@@ -1,0 +1,22 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install deps
+        run: |
+          curl -s https://kind.sigs.k8s.io/dl/latest/kind-linux-amd64 -o kind
+          chmod +x kind && sudo mv kind /usr/local/bin/
+          curl -sL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+          curl -LO "https://dl.k8s.io/release/v1.27.3/bin/linux/amd64/kubectl"
+          chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
+      - name: Run bootstrap
+        run: |
+          kind create cluster --name crossplane-localstack-lab
+          ./bootstrap.sh

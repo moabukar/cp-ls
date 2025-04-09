@@ -3,6 +3,6 @@ service:
 
 extraEnv:
   - name: SERVICES
-    value: s3,sqs,iam,sts
+    value: s3,sqs,iam,sts, ec2
   - name: DEBUG
     value: "1"
