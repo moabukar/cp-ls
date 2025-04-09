@@ -1,25 +1,68 @@
-name: CI
+name: Crossplane + LocalStack E2E
 
 on:
   push:
     branches: [main]
+  pull_request:
 
 jobs:
   e2e:
+    name: E2E Test
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Set up Kind
-        uses: engineerd/setup-kind@v0.5.0
+      - name: Install Kind v0.20.0
+        run: |
+          curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
+          chmod +x ./kind
+          sudo mv ./kind /usr/local/bin/kind
 
-      - name: Set up kubectl and Helm
+      - name: Create Kind cluster (K8s v1.27)
+        run: |
+          cat <<EOF > kind-config.yaml
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+            - role: control-plane
+              image: kindest/node:v1.27.3
+          EOF
+          kind create cluster --name crossplane-localstack-lab --config kind-config.yaml
+
+      - name: Install kubectl + Helm
         run: |
           curl -LO "https://dl.k8s.io/release/v1.27.3/bin/linux/amd64/kubectl"
           chmod +x kubectl && sudo mv kubectl /usr/local/bin/kubectl
 
           curl -sL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-      - name: Run bootstrap
+      - name: Install up CLI
         run: |
+          curl -sL https://raw.githubusercontent.com/crossplane/up/main/install.sh | sh
+          sudo mv ./bin/up /usr/local/bin/
+
+      - name: Run bootstrap script
+        run: |
+          chmod +x bootstrap.sh
           ./bootstrap-pipeline.sh
+
+      - name: Upload Lambda zip to LocalStack
+        run: |
+          awslocal s3 mb s3://crossplane-test-bucket || true
+          awslocal s3 cp lambda/demo-lambda.zip s3://crossplane-test-bucket/demo-lambda.zip
+
+      - name: Patch Lambda with code
+        run: |
+          awslocal lambda update-function-code \
+            --function-name demo-lambda \
+            --s3-bucket crossplane-test-bucket \
+            --s3-key demo-lambda.zip
+
+      - name: Curl Lambda via API Gateway
+        run: |
+          API_ID=$(awslocal apigateway get-rest-apis --query 'items[?name==`demo-api`].id' --output text)
+          echo "Testing API: $API_ID"
+          curl -s http://localhost:4566/restapis/$API_ID/test/_user_request_/demo | tee result.json
+          grep "Hello from LocalStack" result.json
