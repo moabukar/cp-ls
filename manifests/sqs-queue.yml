@@ -1,0 +1,9 @@
+apiVersion: sqs.aws.upbound.io/v1beta1
+kind: Queue
+metadata:
+  name: crossplane-test-queue
+spec:
+  forProvider:
+    region: us-east-1
+  providerConfigRef:
+    name: default
