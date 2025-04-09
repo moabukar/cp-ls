@@ -45,8 +45,21 @@ helm upgrade --install localstack localstack-repo/localstack \
   -f manifests/localstack-values.yaml || error_exit "Failed to install LocalStack."
 
 
-log "Waiting for LocalStack to be ready..."
-kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=localstack -n "$NAMESPACE" --timeout=120s || error_exit "LocalStack pod not ready."
+# Wait for the pod to be created
+for i in {1..30}; do
+  POD=$(kubectl get pod -n "$NAMESPACE" -l app.kubernetes.io/name=localstack -o name || true)
+  [ -n "$POD" ] && break
+  echo "Waiting for LocalStack pod to appear... ($i/30)"
+  sleep 5
+done
+
+# Wait for the pod to be ready
+kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=localstack -n "$NAMESPACE" --timeout=180s || {
+  kubectl get pods -n "$NAMESPACE"
+  kubectl describe pod -l app.kubernetes.io/name=localstack -n "$NAMESPACE"
+  error_exit "LocalStack pod not ready in time."
+}
+
 
 log "Applying secrets and providers..."
 kubectl apply -f manifests/secret.yml || error_exit "Failed to apply secret."
