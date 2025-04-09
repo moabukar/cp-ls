@@ -1,0 +1,15 @@
+apiVersion: apigateway.aws.upbound.io/v1beta1
+kind: Method
+metadata:
+  name: demo-method
+spec:
+  forProvider:
+    region: us-east-1
+    authorization: NONE
+    httpMethod: GET
+    resourceIdRef:
+      name: demo-resource
+    restApiIdRef:
+      name: demo-api
+  providerConfigRef:
+    name: default

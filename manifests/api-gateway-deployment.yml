@@ -1,0 +1,12 @@
+apiVersion: apigateway.aws.upbound.io/v1beta1
+kind: Deployment
+metadata:
+  name: demo-deployment
+spec:
+  forProvider:
+    region: us-east-1
+    restApiIdRef:
+      name: demo-api
+    stageName: test
+  providerConfigRef:
+    name: default

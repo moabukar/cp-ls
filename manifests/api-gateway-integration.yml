@@ -1,0 +1,17 @@
+apiVersion: apigateway.aws.upbound.io/v1beta1
+kind: Integration
+metadata:
+  name: demo-integration
+spec:
+  forProvider:
+    region: us-east-1
+    httpMethod: GET
+    integrationHttpMethod: POST
+    resourceIdRef:
+      name: demo-resource
+    restApiIdRef:
+      name: demo-api
+    type: AWS_PROXY
+    uri: arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:000000000000:function:demo-lambda/invocations
+  providerConfigRef:
+    name: default
