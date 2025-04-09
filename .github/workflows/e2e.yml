@@ -38,11 +38,6 @@ jobs:
 
           curl -sL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 
-      - name: Install up CLI
-        run: |
-          curl -sL https://raw.githubusercontent.com/crossplane/up/main/install.sh | sh
-          sudo mv ./bin/up /usr/local/bin/
-
       - name: Run bootstrap script
         run: |
           chmod +x bootstrap.sh
