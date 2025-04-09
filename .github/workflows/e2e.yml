@@ -22,4 +22,4 @@ jobs:
 
       - name: Run bootstrap
         run: |
-          ./bootstrap.sh
+          ./bootstrap-pipeline.sh
