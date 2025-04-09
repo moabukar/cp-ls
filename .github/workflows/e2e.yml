@@ -45,7 +45,7 @@ jobs:
 
       - name: Install AWS CLI and awslocal
         run: |
-          qpip install awscli awscli-local
+          pip install awscli awscli-local
           awslocal --version
 
       - name: Upload Lambda zip to LocalStack
