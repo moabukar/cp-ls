@@ -43,6 +43,11 @@ jobs:
           chmod +x bootstrap.sh
           ./bootstrap-pipeline.sh
 
+      - name: Install AWS CLI and awslocal
+        run: |
+          qpip install awscli awscli-local
+          awslocal --version
+
       - name: Upload Lambda zip to LocalStack
         run: |
           awslocal s3 mb s3://crossplane-test-bucket || true
