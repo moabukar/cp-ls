@@ -46,7 +46,7 @@ jobs:
       - name: Upload Lambda zip to LocalStack
         run: |
           awslocal s3 mb s3://crossplane-test-bucket || true
-          awslocal s3 cp lambda/demo-lambda.zip s3://crossplane-test-bucket/demo-lambda.zip
+          awslocal s3 cp manifests/demo-lambda.zip s3://crossplane-test-bucket/demo-lambda.zip
 
       - name: Patch Lambda with code
         run: |
