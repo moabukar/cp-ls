@@ -38,9 +38,12 @@ helm repo update
 helm upgrade --install crossplane crossplane-stable/crossplane -n "$NAMESPACE" || error_exit "Failed to install Crossplane."
 
 log "Installing LocalStack via Helm..."
+helm repo add localstack-repo https://helm.localstack.cloud
+helm repo update
 helm upgrade --install localstack localstack-repo/localstack \
   -n "$NAMESPACE" \
   -f manifests/localstack-values.yaml || error_exit "Failed to install LocalStack."
+
 
 log "Waiting for LocalStack to be ready..."
 kubectl wait --for=condition=Ready pod -l app.kubernetes.io/name=localstack -n "$NAMESPACE" --timeout=120s || error_exit "LocalStack pod not ready."
